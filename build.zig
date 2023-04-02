@@ -16,8 +16,6 @@ pub fn build(b: *std.Build) void {
     // set a preferred release mode, allowing the user to decide how to optimize.
     const optimize = b.standardOptimizeOption(.{});
 
-    const raylib = raylib_build.addRaylib(b, target, optimize);
-
     const exe = b.addExecutable(.{
         .name = "codotaku_image_viewer",
         // In this case the main source file is merely a path, however, in more
@@ -32,6 +30,8 @@ pub fn build(b: *std.Build) void {
         if (target.isWindows()) exe.subsystem = .Windows;
     }
 
+    // Build and link raylib from source
+    const raylib = raylib_build.addRaylib(b, target, optimize);
     exe.linkLibrary(raylib);
     exe.addIncludePath("libs/raylib/src");
 
