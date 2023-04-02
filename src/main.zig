@@ -84,7 +84,7 @@ pub fn main() error{OutOfMemory}!void {
         camera.rotation = c.Lerp(camera.rotation, target_rotation, frame_time / rotation_duration);
 
         if (c.IsMouseButtonDown(c.MOUSE_LEFT_BUTTON)) {
-            const translation = c.Vector2Negate(c.Vector2Scale(c.GetMouseDelta(), 1 / target_zoom));
+            const translation = c.Vector2Scale(c.GetMouseDelta(), -1 / target_zoom);
             camera.target = c.Vector2Add(camera.target, c.Vector2Rotate(translation, -camera.rotation * c.DEG2RAD));
         }
 
