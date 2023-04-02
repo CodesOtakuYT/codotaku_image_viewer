@@ -10,6 +10,7 @@ Around 1 mb executable with support for most popular image formats even PSD!
 - zoom towards the mouse and outwards from it by using the `Mouse Wheel`
 - hold `Left Shift Key` to rotate instead of zoom around the mouse.
 - easily cross compile to any platform, thanks to Zig build system.
+- 0.1.0 fully created in a youtube video tutorial! https://www.youtube.com/watch?v=DMURJbpo94g
 
 Make sure to clone the repo recursively with the submodule(s).
 ```sh
