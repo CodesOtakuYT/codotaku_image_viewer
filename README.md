@@ -1,5 +1,5 @@
 ## Codotaku Image Viewer 0.1.0
-A tiny fast simple cross platform image viewer made using Ziglang and Raylib.
+A tiny fast simple cross platform open source image viewer made using Ziglang and Raylib.
 No GUI, so you can focus on viewing the images!
 Around 1 mb executable with support for most popular image formats even PSD!
 - import multiple images by dropping them into the window
