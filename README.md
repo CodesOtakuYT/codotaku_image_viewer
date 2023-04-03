@@ -13,13 +13,27 @@ Around 1 mb executable with support for most popular image formats even PSD!
 - easily cross compile to any platform, thanks to Zig build system.
 - 0.1.0 fully created in a youtube video tutorial! https://www.youtube.com/watch?v=DMURJbpo94g
 
-Make sure to clone the repo recursively with the submodule(s).
+1 - Make sure to clone the repo recursively with the submodule(s), cd into the directory.
 ```sh
 git clone --recursive https://github.com/CodesOtakuYT/codotaku_image_viewer
+cd codotaku_image_viewer
 ```
-Run this in the root directory of the repo to build a fast release binary
-You need zig!
+
+2 - Translate C headers into zig files
+On Windows, run:
+```sh
+./translate_headers.bat
+```
+On Linux, run:
+```sh
+./translate_headers.sh
+```
+
+3 - Run this in the root directory of the repo to build a fast release binary
+You need zig installed in your system and available in the environment variables!
 ```sh
 zig build run -Doptimize=ReleaseFast
 ```
+
+4 - Enjoy!
 This open source project is open to contributions!
