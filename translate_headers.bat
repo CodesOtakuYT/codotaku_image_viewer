@@ -1,3 +1,3 @@
 @echo off
-mkdir src/gen
+mkdir src\gen
 zig translate-c -lc headers/raylib.h > src/gen/raylib.zig
