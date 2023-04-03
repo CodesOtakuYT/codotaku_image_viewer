@@ -1,6 +1,5 @@
 const std = @import("std");
-const raymath = @import("raymath.zig");
-const raylib = @import("raylib.zig");
+const raylib = @import("gen/raylib.zig");
 
 const Texture2DArrayList = std.ArrayList(raylib.Texture2D);
 
@@ -9,7 +8,7 @@ const cycle_filter_key = raylib.KEY_P;
 const clear_textures_key = raylib.KEY_BACKSPACE;
 const toggle_fullscreen_key = raylib.KEY_F;
 const zoom_increment = 0.1;
-const vector2_zero = raymath.Vector2Zero();
+const vector2_zero = raylib.Vector2Zero();
 const rotation_increment = 15;
 const rotation_duration = 0.2;
 const zoom_duration = 0.2;
@@ -79,11 +78,11 @@ pub fn main() error{OutOfMemory}!void {
 
         const frame_time = raylib.GetFrameTime();
         camera.zoom *= std.math.pow(f32, target_zoom / camera.zoom, frame_time / zoom_duration);
-        camera.rotation = raymath.Lerp(camera.rotation, target_rotation, frame_time / rotation_duration);
+        camera.rotation = raylib.Lerp(camera.rotation, target_rotation, frame_time / rotation_duration);
 
         if (raylib.IsMouseButtonDown(raylib.MOUSE_LEFT_BUTTON)) {
-            const translation = raymath.Vector2Scale(raylib.GetMouseDelta(), -1 / target_zoom);
-            camera.target = raymath.Vector2Add(camera.target, raymath.Vector2Rotate(translation, -camera.rotation * raylib.DEG2RAD));
+            const translation = raylib.Vector2Scale(raylib.GetMouseDelta(), -1 / target_zoom);
+            camera.target = raylib.Vector2Add(camera.target, raylib.Vector2Rotate(translation, -camera.rotation * raylib.DEG2RAD));
         }
 
         if (raylib.IsKeyPressed(cycle_filter_key)) {
