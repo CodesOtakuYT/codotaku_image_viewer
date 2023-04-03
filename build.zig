@@ -33,7 +33,6 @@ pub fn build(b: *std.Build) void {
     // Build and link raylib from source
     const raylib = raylib_build.addRaylib(b, target, optimize);
     exe.linkLibrary(raylib);
-    exe.addIncludePath("libs/raylib/src");
 
     // This declares intent for the executable to be installed into the
     // standard location when the user invokes the "install" step (the default

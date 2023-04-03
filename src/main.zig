@@ -1,30 +1,28 @@
 const std = @import("std");
-const c = @cImport({
-    @cInclude("raylib.h");
-    @cInclude("raymath.h");
-});
+const raymath = @import("raymath.zig");
+const raylib = @import("raylib.zig");
 
-const Texture2DArrayList = std.ArrayList(c.Texture2D);
+const Texture2DArrayList = std.ArrayList(raylib.Texture2D);
 
 const title = "Codotaku Image Viewer";
-const cycle_filter_key = c.KEY_P;
-const clear_textures_key = c.KEY_BACKSPACE;
-const toggle_fullscreen_key = c.KEY_F;
+const cycle_filter_key = raylib.KEY_P;
+const clear_textures_key = raylib.KEY_BACKSPACE;
+const toggle_fullscreen_key = raylib.KEY_F;
 const zoom_increment = 0.1;
-const vector2_zero = c.Vector2Zero();
+const vector2_zero = raymath.Vector2Zero();
 const rotation_increment = 15;
 const rotation_duration = 0.2;
 const zoom_duration = 0.2;
 
-fn focusCamera(camera: *c.Camera2D, screen_position: c.Vector2) void {
-    camera.*.target = c.GetScreenToWorld2D(screen_position, camera.*);
+fn focusCamera(camera: *raylib.Camera2D, screen_position: raylib.Vector2) void {
+    camera.*.target = raylib.GetScreenToWorld2D(screen_position, camera.*);
     camera.*.offset = screen_position;
 }
 
 pub fn main() error{OutOfMemory}!void {
-    c.SetConfigFlags(c.FLAG_WINDOW_RESIZABLE | c.FLAG_VSYNC_HINT);
-    c.InitWindow(800, 600, title);
-    defer c.CloseWindow();
+    raylib.SetConfigFlags(raylib.FLAG_WINDOW_RESIZABLE | raylib.FLAG_VSYNC_HINT);
+    raylib.InitWindow(800, 600, title);
+    defer raylib.CloseWindow();
 
     var arena = std.heap.ArenaAllocator.init(std.heap.c_allocator);
     defer arena.deinit();
@@ -33,39 +31,39 @@ pub fn main() error{OutOfMemory}!void {
     var textures = Texture2DArrayList.init(allocator);
     defer {
         for (textures.items) |texture| {
-            c.UnloadTexture(texture);
+            raylib.UnloadTexture(texture);
         }
         textures.deinit();
     }
 
-    var texture_filter = c.TEXTURE_FILTER_TRILINEAR;
+    var texture_filter = raylib.TEXTURE_FILTER_TRILINEAR;
     var target_zoom: f32 = 1;
     var target_rotation: f32 = 0;
 
-    var camera = c.Camera2D{
+    var camera = raylib.Camera2D{
         .offset = vector2_zero,
         .target = vector2_zero,
         .rotation = 0,
         .zoom = 1,
     };
 
-    while (!c.WindowShouldClose()) {
-        if (c.IsKeyPressed(toggle_fullscreen_key)) {
-            c.ToggleFullscreen();
+    while (!raylib.WindowShouldClose()) {
+        if (raylib.IsKeyPressed(toggle_fullscreen_key)) {
+            raylib.ToggleFullscreen();
         }
 
-        if (c.IsKeyPressed(clear_textures_key)) {
+        if (raylib.IsKeyPressed(clear_textures_key)) {
             for (textures.items) |texture| {
-                c.UnloadTexture(texture);
+                raylib.UnloadTexture(texture);
             }
             textures.clearRetainingCapacity();
         }
 
-        const mouse_wheel_move = c.GetMouseWheelMove();
-        const mouse_position = c.GetMousePosition();
+        const mouse_wheel_move = raylib.GetMouseWheelMove();
+        const mouse_position = raylib.GetMousePosition();
 
         if (mouse_wheel_move != 0) {
-            if (c.IsKeyDown(c.KEY_LEFT_SHIFT)) {
+            if (raylib.IsKeyDown(raylib.KEY_LEFT_SHIFT)) {
                 target_rotation += mouse_wheel_move * rotation_increment;
                 focusCamera(&camera, mouse_position);
             } else {
@@ -74,57 +72,57 @@ pub fn main() error{OutOfMemory}!void {
             }
         }
 
-        if (c.IsMouseButtonDown(c.MOUSE_MIDDLE_BUTTON)) {
+        if (raylib.IsMouseButtonDown(raylib.MOUSE_MIDDLE_BUTTON)) {
             focusCamera(&camera, mouse_position);
             target_zoom = 1;
         }
 
-        const frame_time = c.GetFrameTime();
+        const frame_time = raylib.GetFrameTime();
         camera.zoom *= std.math.pow(f32, target_zoom / camera.zoom, frame_time / zoom_duration);
-        camera.rotation = c.Lerp(camera.rotation, target_rotation, frame_time / rotation_duration);
+        camera.rotation = raymath.Lerp(camera.rotation, target_rotation, frame_time / rotation_duration);
 
-        if (c.IsMouseButtonDown(c.MOUSE_LEFT_BUTTON)) {
-            const translation = c.Vector2Scale(c.GetMouseDelta(), -1 / target_zoom);
-            camera.target = c.Vector2Add(camera.target, c.Vector2Rotate(translation, -camera.rotation * c.DEG2RAD));
+        if (raylib.IsMouseButtonDown(raylib.MOUSE_LEFT_BUTTON)) {
+            const translation = raymath.Vector2Scale(raylib.GetMouseDelta(), -1 / target_zoom);
+            camera.target = raymath.Vector2Add(camera.target, raymath.Vector2Rotate(translation, -camera.rotation * raylib.DEG2RAD));
         }
 
-        if (c.IsKeyPressed(cycle_filter_key)) {
+        if (raylib.IsKeyPressed(cycle_filter_key)) {
             texture_filter = @mod(texture_filter + 1, 3);
             for (textures.items) |texture| {
-                c.SetTextureFilter(texture, texture_filter);
+                raylib.SetTextureFilter(texture, texture_filter);
             }
         }
 
-        if (c.IsFileDropped()) {
-            const dropped_files = c.LoadDroppedFiles();
-            defer c.UnloadDroppedFiles(dropped_files);
+        if (raylib.IsFileDropped()) {
+            const dropped_files = raylib.LoadDroppedFiles();
+            defer raylib.UnloadDroppedFiles(dropped_files);
 
             for (dropped_files.paths[0..dropped_files.count]) |dropped_file_path| {
-                var texture = c.LoadTexture(dropped_file_path);
+                var texture = raylib.LoadTexture(dropped_file_path);
                 if (texture.id == 0) continue;
-                c.GenTextureMipmaps(&texture);
+                raylib.GenTextureMipmaps(&texture);
                 if (texture.mipmaps == 1) {
                     std.debug.print("{s}", .{"Mipmaps failed to generate!\n"});
                 }
-                c.SetTextureFilter(texture, texture_filter);
+                raylib.SetTextureFilter(texture, texture_filter);
                 try textures.append(texture);
             }
         }
 
         { // Drawing
-            c.BeginDrawing();
-            defer c.EndDrawing();
+            raylib.BeginDrawing();
+            defer raylib.EndDrawing();
 
-            c.ClearBackground(c.WHITE);
+            raylib.ClearBackground(raylib.WHITE);
 
             var x: i32 = 0;
 
             { // Camera 2D
-                c.BeginMode2D(camera);
-                defer c.EndMode2D();
+                raylib.BeginMode2D(camera);
+                defer raylib.EndMode2D();
 
                 for (textures.items) |texture| {
-                    c.DrawTexture(texture, x, 0, c.WHITE);
+                    raylib.DrawTexture(texture, x, 0, raylib.WHITE);
                     x += texture.width;
                 }
             }
