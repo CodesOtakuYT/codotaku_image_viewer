@@ -22,7 +22,7 @@ cd codotaku_image_viewer
 2 - Translate C headers into zig files
 On Windows, run:
 ```sh
-./translate_headers.bat
+.\translate_headers.bat
 ```
 On Linux, run:
 ```sh
