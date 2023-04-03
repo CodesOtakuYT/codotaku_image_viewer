@@ -1,0 +1,7 @@
+{
+    "git.autofetch": true,
+    "editor.mouseWheelZoom": true,
+    "debug.allowBreakpointsEverywhere": true,
+    "zig.buildOnSave": true,
+    "editor.formatOnSave": true
+}
