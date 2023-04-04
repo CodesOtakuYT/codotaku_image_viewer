@@ -19,18 +19,13 @@ git clone --recursive https://github.com/CodesOtakuYT/codotaku_image_viewer
 cd codotaku_image_viewer
 ```
 
-2 - Translate C headers into zig files
-On Windows, run:
+2 - Setup project dependencies like translating C header files
+You need zig installed in your system and available in the environment variables!
 ```sh
-.\translate_headers.bat
-```
-On Linux, run:
-```sh
-./translate_headers.sh
+zig run setup.zig
 ```
 
 3 - Run this in the root directory of the repo to build a fast release binary
-You need zig installed in your system and available in the environment variables!
 ```sh
 zig build run -Doptimize=ReleaseFast
 ```
