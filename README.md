@@ -14,10 +14,15 @@ Around 1 mb executable with support for most popular image formats even PSD!
 - 0.1.0 fully created in a youtube video tutorial! https://www.youtube.com/watch?v=DMURJbpo94g
 
 1 - Make sure to clone the repo recursively with the submodule(s), cd into the directory.
-2 - Setup project dependencies like translating C header files
+
+2 - Setup project dependencies like translating C header files.
+
 You need zig installed in your system and available in the environment variables!
-3 - Run this in the root directory of the repo to build a fast release binary
+
+3 - Run this in the root directory of the repo to build a fast release binary.
+
 4 - Enjoy!
+
 This open source project is open to contributions!
 ```sh
 git clone --recursive https://github.com/CodesOtakuYT/codotaku_image_viewer
