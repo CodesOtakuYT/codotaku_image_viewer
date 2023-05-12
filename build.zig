@@ -25,7 +25,7 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
     });
 
-    if (exe.optimize == .ReleaseFast) {
+    if (exe.optimize == .ReleaseSmall) {
         exe.strip = true;
         if (target.isWindows()) exe.subsystem = .Windows;
     }
