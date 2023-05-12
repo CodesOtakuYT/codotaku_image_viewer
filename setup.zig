@@ -42,7 +42,7 @@ fn translate_headers(child_allocator: std.mem.Allocator) !void {
 
 pub fn main() !void {
     var allocator = std.heap.GeneralPurposeAllocator(.{}){};
-    defer std.debug.assert(!allocator.deinit());
+    defer std.debug.assert(allocator.deinit() == .ok);
 
     var child_allocator = allocator.allocator();
     try translate_headers(child_allocator);
