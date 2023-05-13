@@ -2,7 +2,8 @@
 A tiny fast simple cross platform open source image viewer made using Ziglang and Raylib.
 No GUI, so you can focus on viewing the images!
 Around 1 mb executable with support for most popular image formats even PSD!
-- import multiple images by dropping them into the window
+- import multiple images or directories recursively by dropping them into the window or in the command line arguments.
+- If numbers are included in the command line arguments, it will switch the max recursions for the next arguments and drops.
 - toggle image texturing filter (NEAREST, BILINEAR, TRILINEAR) by pressing `P`
 - unload and clear all the imported textures by pressing `Backspace`.
 - toggle fullscreen by pressing `F`
