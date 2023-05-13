@@ -18,15 +18,26 @@ fn focusCamera(camera: *raylib.Camera2D, screen_position: raylib.Vector2) void {
     camera.*.offset = screen_position;
 }
 
-fn add_texture(fileName: [*c]const u8, textures: *Texture2DArrayList, texture_filter: c_int) error{OutOfMemory}!void {
-    var texture = raylib.LoadTexture(fileName);
-    if (texture.id == 0) return;
-    raylib.GenTextureMipmaps(&texture);
-    if (texture.mipmaps == 1) {
-        std.debug.print("{s}", .{"Mipmaps failed to generate!\n"});
+fn add_texture(fileName: [*c]const u8, textures: *Texture2DArrayList, texture_filter: c_int, recursions: u64) error{OutOfMemory}!void {
+    if (recursions == 0) return;
+    if (raylib.IsPathFile(fileName)) {
+        var texture = raylib.LoadTexture(fileName);
+        if (texture.id == 0) return;
+        raylib.GenTextureMipmaps(&texture);
+        if (texture.mipmaps == 1) {
+            std.debug.print("{s}", .{"Mipmaps failed to generate!\n"});
+        }
+        raylib.SetTextureFilter(texture, texture_filter);
+        try textures.append(texture);
+    } else {
+        const files = raylib.LoadDirectoryFiles(fileName);
+        if (files.paths != null) {
+            defer raylib.UnloadDirectoryFiles(files);
+            for (files.paths[0..files.count]) |path| {
+                try add_texture(path, textures, texture_filter, recursions - 1);
+            }
+        }
     }
-    raylib.SetTextureFilter(texture, texture_filter);
-    try textures.append(texture);
 }
 
 pub fn main() error{ OutOfMemory, Overflow }!void {
@@ -57,9 +68,15 @@ pub fn main() error{ OutOfMemory, Overflow }!void {
         .zoom = 1,
     };
 
+    var max_recursions: u64 = 2;
+
     const args = try std.process.argsAlloc(std.heap.c_allocator);
     for (args[1..]) |arg| {
-        try add_texture(arg, &textures, texture_filter);
+        if (std.fmt.parseInt(u64, arg, 10)) |number| {
+            max_recursions = number;
+        } else |_| {
+            try add_texture(arg, &textures, texture_filter, max_recursions);
+        }
     }
     std.process.argsFree(std.heap.c_allocator, args);
 
@@ -114,7 +131,11 @@ pub fn main() error{ OutOfMemory, Overflow }!void {
             defer raylib.UnloadDroppedFiles(dropped_files);
 
             for (dropped_files.paths[0..dropped_files.count]) |dropped_file_path| {
-                try add_texture(dropped_file_path, &textures, texture_filter);
+                if (std.fmt.parseInt(u64, std.mem.sliceTo(dropped_file_path, 0), 10)) |number| {
+                    max_recursions = number;
+                } else |_| {
+                    try add_texture(dropped_file_path, &textures, texture_filter, max_recursions);
+                }
             }
         }
 
