@@ -18,7 +18,18 @@ fn focusCamera(camera: *raylib.Camera2D, screen_position: raylib.Vector2) void {
     camera.*.offset = screen_position;
 }
 
-pub fn main() error{OutOfMemory}!void {
+fn add_texture(fileName: [*c]const u8, textures: *Texture2DArrayList, texture_filter: c_int) error{OutOfMemory}!void {
+    var texture = raylib.LoadTexture(fileName);
+    if (texture.id == 0) return;
+    raylib.GenTextureMipmaps(&texture);
+    if (texture.mipmaps == 1) {
+        std.debug.print("{s}", .{"Mipmaps failed to generate!\n"});
+    }
+    raylib.SetTextureFilter(texture, texture_filter);
+    try textures.append(texture);
+}
+
+pub fn main() error{ OutOfMemory, Overflow }!void {
     raylib.SetConfigFlags(raylib.FLAG_WINDOW_RESIZABLE | raylib.FLAG_VSYNC_HINT);
     raylib.InitWindow(800, 600, title);
     defer raylib.CloseWindow();
@@ -45,6 +56,12 @@ pub fn main() error{OutOfMemory}!void {
         .rotation = 0,
         .zoom = 1,
     };
+
+    const args = try std.process.argsAlloc(std.heap.c_allocator);
+    for (args[1..]) |arg| {
+        try add_texture(arg, &textures, texture_filter);
+    }
+    std.process.argsFree(std.heap.c_allocator, args);
 
     while (!raylib.WindowShouldClose()) {
         if (raylib.IsKeyPressed(toggle_fullscreen_key)) {
@@ -97,14 +114,7 @@ pub fn main() error{OutOfMemory}!void {
             defer raylib.UnloadDroppedFiles(dropped_files);
 
             for (dropped_files.paths[0..dropped_files.count]) |dropped_file_path| {
-                var texture = raylib.LoadTexture(dropped_file_path);
-                if (texture.id == 0) continue;
-                raylib.GenTextureMipmaps(&texture);
-                if (texture.mipmaps == 1) {
-                    std.debug.print("{s}", .{"Mipmaps failed to generate!\n"});
-                }
-                raylib.SetTextureFilter(texture, texture_filter);
-                try textures.append(texture);
+                try add_texture(dropped_file_path, &textures, texture_filter);
             }
         }
 
