@@ -40,7 +40,7 @@ fn add_texture(fileName: [*c]const u8, textures: *Texture2DArrayList, texture_fi
     }
 }
 
-pub fn main() error{ OutOfMemory, Overflow }!void {
+pub fn main() error{ OutOfMemory, Overflow, InvalidCmdLine }!void {
     raylib.SetConfigFlags(raylib.FLAG_WINDOW_RESIZABLE | raylib.FLAG_VSYNC_HINT);
     raylib.InitWindow(800, 600, title);
     defer raylib.CloseWindow();
